@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Valuación de Usados · Cofiño</title>
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--verde:#003640;--lima:#C4F402;--negro:#161918;--gris:#BFCBD0;--fondo:#F4F7F8;--linea:#DCE3E6;
+--azul:#1545D4;--alto:#1E8F5E;--medio:#C98500;--bajo:#D8412F;--txt2:#4d5a5f}
+*{box-sizing:border-box}
+html,body{margin:0;background:#fff;color:var(--negro);font:16px/1.5 'Work Sans','Segoe UI',Arial,sans-serif}
+h1,h2,h3,h4,.clash{font-family:'Clash Display','Work Sans',Arial,sans-serif;font-weight:600;letter-spacing:-.01em;margin:0}
+button{font:inherit;cursor:pointer}
+.oculto{display:none!important}
+/* Encabezado */
+header{background:var(--verde);color:#fff;padding:calc(env(safe-area-inset-top,0px) + .8rem) 1.2rem .8rem;
+display:flex;align-items:center;gap:1rem;position:sticky;top:0;z-index:10}
+header .marca{font-family:'Clash Display',sans-serif;font-size:1.25rem;font-weight:600}
+header .marca small{display:block;font-family:'Work Sans',sans-serif;font-weight:400;font-size:.75rem;opacity:.75}
+header img{height:34px}
+header .usr{margin-left:auto;font-size:.88rem;opacity:.9;text-align:right}
+header .usr button{background:none;border:1px solid rgba(255,255,255,.4);color:#fff;border-radius:999px;padding:.1rem .7rem;margin-left:.5rem;font-size:.8rem}
+nav{display:flex;gap:.3rem;padding:.6rem 1.2rem 0;border-bottom:1px solid var(--linea);overflow-x:auto;max-width:1180px;margin:0 auto}
+nav button{background:none;border:none;padding:.6rem .9rem;border-bottom:3px solid transparent;color:var(--txt2);font-weight:500;white-space:nowrap}
+nav button.activo{color:var(--verde);border-color:var(--lima)}
+main{max-width:1180px;margin:0 auto;padding:1.4rem 1.2rem calc(env(safe-area-inset-bottom,0px) + 3rem)}
+.intro{color:var(--txt2);margin:.3rem 0 1.4rem;font-size:.95rem}
+/* Formularios */
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.9rem 1rem}
+.grid4{grid-template-columns:repeat(4,1fr)}
+label{display:block;font-size:.85rem;color:var(--txt2);margin-bottom:.25rem}
+select,input{width:100%;padding:.6rem .75rem;border:1px solid var(--linea);border-radius:10px;font:inherit;background:#fff;color:var(--negro)}
+select:focus,input:focus{outline:2px solid var(--lima);border-color:var(--verde)}
+details{border:1px solid var(--linea);border-radius:12px;padding:.6rem .9rem;margin:1rem 0}
+summary{cursor:pointer;font-weight:500}
+.btn{background:var(--verde);color:#fff;border:none;border-radius:999px;padding:.7rem 1.8rem;font-weight:600;margin-top:1rem}
+.btn:hover{background:var(--negro);color:var(--lima)}
+.btn:disabled{opacity:.5;cursor:wait}
+.btn2{background:#fff;color:var(--verde);border:1.5px solid var(--verde);border-radius:999px;padding:.5rem 1.3rem;font-weight:600}
+.nota{font-size:.85rem;color:var(--txt2)}
+.aviso{background:#FFF6E0;border-left:4px solid var(--medio);padding:.6rem .9rem;border-radius:0 10px 10px 0;margin:.6rem 0;font-size:.9rem}
+.error{background:#FDECEA;border-left:4px solid var(--bajo)}
+/* Ficha */
+.ficha{background:var(--verde);color:#fff;border-radius:28px 28px 28px 4px;padding:1.6rem 1.9rem 1.5rem;margin:1.6rem 0 1.2rem;position:relative;overflow:hidden}
+.ficha:after{content:"";position:absolute;right:-90px;top:-90px;width:260px;height:260px;border:38px solid rgba(196,244,2,.13);border-radius:50%}
+.badges span{display:inline-block;background:rgba(255,255,255,.1);border-radius:999px;padding:.1rem .7rem;margin-right:.35rem;font-size:.78rem}
+.veh{font-family:'Clash Display',sans-serif;font-size:2rem;font-weight:600;line-height:1.1;margin-top:.8rem}
+.sub{opacity:.85;margin-top:.25rem}
+.chips span{display:inline-block;border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:.12rem .75rem;margin:.7rem .35rem 0 0;font-size:.85rem}
+.precio-lbl{margin-top:1.3rem;font-size:.95rem;opacity:.85}
+.precio{font-family:'Clash Display',sans-serif;font-size:3.1rem;font-weight:600;color:var(--lima);line-height:1.05}
+.metricas{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;margin:0 0 1.2rem}
+.metricas div{border-left:3px solid var(--lima);padding:.35rem .8rem;background:var(--fondo);border-radius:0 12px 12px 0}
+.metricas b{display:block;font-family:'Clash Display',sans-serif;font-size:1.35rem;font-weight:600}
+.metricas small{color:var(--txt2)}
+.ivra{border:2px solid;border-radius:16px;padding:.9rem 1.2rem;margin-bottom:1.2rem}
+.curva-head{display:flex;align-items:center;justify-content:space-between;margin:1.2rem 0 .4rem;gap:1rem;flex-wrap:wrap}
+.toggle{display:inline-flex;border:1px solid var(--linea);border-radius:999px;overflow:hidden}
+.toggle button{border:none;background:#fff;padding:.3rem .9rem;font-size:.85rem}
+.toggle button.on{background:var(--verde);color:#fff}
+.graf{width:100%;overflow-x:auto}
+.leyenda{font-size:.82rem;color:var(--txt2);margin:.2rem 0 1.2rem}
+.paneles{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.panel{border:1px solid var(--linea);border-radius:16px;padding:1rem 1.2rem}
+.panel h4{font-size:1.05rem;margin-bottom:.5rem}
+.panel table{width:100%;border-collapse:collapse;font-size:.9rem}
+.panel td{padding:.3rem 0;border-bottom:1px solid #EEF2F3}
+.panel td:last-child{text-align:right;font-weight:500}
+/* Bitácora */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;margin:1rem 0}
+.kpis div{background:var(--fondo);border-radius:14px;padding:.7rem .9rem}
+.kpis b{display:block;font-family:'Clash Display',sans-serif;font-size:1.5rem}
+.tabla{overflow-x:auto;border:1px solid var(--linea);border-radius:14px}
+.tabla table{border-collapse:collapse;width:100%;font-size:.85rem;white-space:nowrap}
+.tabla th{background:var(--fondo);text-align:left;padding:.5rem .7rem;font-weight:600;position:sticky;top:0}
+.tabla td{padding:.4rem .7rem;border-top:1px solid #EEF2F3}
+.tabla input{width:120px;padding:.3rem .5rem}
+/* Login / carga */
+.centro{max-width:380px;margin:12vh auto;padding:0 1.2rem}
+.centro h1{font-size:2rem;margin-bottom:.3rem}
+.centro input{margin-bottom:.8rem}
+.cargando{text-align:center;padding:3rem 1rem;color:var(--txt2)}
+.spin{width:36px;height:36px;border:4px solid var(--linea);border-top-color:var(--verde);border-radius:50%;margin:0 auto 1rem;animation:g 1s linear infinite}
+@keyframes g{to{transform:rotate(360deg)}}
+@media(max-width:800px){.grid,.grid4{grid-template-columns:1fr 1fr}.metricas,.kpis{grid-template-columns:1fr 1fr}
+.paneles{grid-template-columns:1fr}.precio{font-size:2.4rem}.veh{font-size:1.6rem}.ficha{padding:1.3rem}}
+@media(max-width:480px){.grid,.grid4{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- ===================== LOGIN ===================== -->
+<section id="vLogin" class="centro">
+  <h1>Valuación de usados</h1>
+  <p class="intro">Ingresa con tu usuario de Cofiño Usados.</p>
+  <label for="lUsr">Usuario</label><input id="lUsr" autocomplete="username">
+  <label for="lPw">Clave</label><input id="lPw" type="password" autocomplete="current-password">
+  <button class="btn" id="bLogin" style="width:100%">Entrar</button>
+  <div id="lMsg"></div>
+</section>
+
+<!-- ===================== APP ===================== -->
+<div id="vApp" class="oculto">
+<header>
+  <img id="logo" class="oculto" alt="Cofiño Usados">
+  <div class="marca" id="marcaTxt">Cofiño Usados<small>Valuación · segunda referencia</small></div>
+  <div class="usr"><span id="uNombre"></span><button id="bSalir">Salir</button></div>
+</header>
+<nav id="tabs">
+  <button data-t="tUsado" class="activo">Valuar usado</button>
+  <button data-t="tRecompra">Recompra garantizada</button>
+  <button data-t="tBitacora">Bitácora</button>
+  <button data-t="tAdmin" id="navAdmin" class="oculto">Administración</button>
+</nav>
+<main>
+  <div id="cargaModelo" class="cargando"><div class="spin"></div>Cargando modelo de valuación…</div>
+  <div id="sinModelo" class="aviso error oculto"></div>
+  <div id="avisoMacro" class="aviso oculto">Las variables macro del mes no están registradas: se usa el último dato del histórico. Pide al administrador que las actualice.</div>
+
+  <!-- ===== Valuar usado ===== -->
+  <section id="tUsado" class="tab oculto">
+    <h2>Vehículo que estás recibiendo</h2>
+    <p class="intro">Segunda referencia de precio con el histórico de avalúos de Cofiño. Úsala junto al IVRA, no en su lugar.</p>
+    <div class="grid" id="selU"></div>
+    <div class="grid" style="margin-top:.9rem">
+      <div><label>Año del modelo</label><input id="uAnio" type="number" inputmode="numeric"></div>
+      <div><label>Kilometraje</label><input id="uKm" type="number" inputmode="numeric" value="60000"></div>
+      <div><label>Color</label><select id="uColor"></select></div>
+      <div><label>Precio de nuevo (Q) — vacío si no lo sabes</label><input id="uPn" type="number" inputmode="numeric" placeholder="El modelo lo estima"></div>
+      <div><label>Precio IVRA (Q) — opcional</label><input id="uIvra" type="number" inputmode="numeric" placeholder="Para comparar"></div>
+      <div><label>No. de avalúo — opcional</label><input id="uAval"></div>
+    </div>
+    <details><summary>Ajustes avanzados de mercado</summary>
+      <p class="nota">Solo si tienes la liquidez y tendencia vigentes de la línea. Si no, el modelo usa el último dato conocido.</p>
+      <div class="grid">
+        <div><label>Liquidez de la línea</label><select id="uLiq"><option value="">Automática</option><option>ALTA</option><option>MEDIA</option><option>BAJA</option></select></div>
+        <div><label>Tendencia de nuevos</label><select id="uTen"><option value="">Automática</option><option>CRECIENDO</option><option>ESTABLE</option><option>CONTRAYENDO</option></select></div>
+      </div>
+    </details>
+    <button class="btn" id="bValuar">Calcular valuación</button>
+    <div id="resU"></div>
+  </section>
+
+  <!-- ===== Recompra ===== -->
+  <section id="tRecompra" class="tab oculto">
+    <h2>Vehículo nuevo que estás vendiendo</h2>
+    <p class="intro">Proyecta el precio de recompra garantizada a futuro, con escenarios macro.</p>
+    <div class="grid" id="selN"></div>
+    <div class="grid grid4" style="margin-top:.9rem">
+      <div><label>Precio de venta hoy (Q)</label><input id="nPn" type="number" inputmode="numeric"></div>
+      <div><label>Recompra a (años)</label><select id="nHz"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option></select></div>
+      <div><label>Km máximo por año</label><input id="nKm" type="number" inputmode="numeric" value="15000"></div>
+      <div><label>Color</label><select id="nColor"></select></div>
+    </div>
+    <button class="btn" id="bRecompra">Calcular recompra</button>
+    <div id="resN"></div>
+  </section>
+
+  <!-- ===== Bitácora ===== -->
+  <section id="tBitacora" class="tab oculto">
+    <h2>Bitácora de consultas</h2>
+    <p class="intro">Cuando cierres un avalúo, anota el valor final. Así medimos qué tan bien predice el modelo en la operación real.</p>
+    <button class="btn2" id="bRecargarBit">Actualizar</button>
+    <button class="btn2" id="bCsv">Descargar CSV</button>
+    <div id="kpis" class="kpis"></div>
+    <div class="tabla" id="tablaBit"></div>
+  </section>
+
+  <!-- ===== Administración ===== -->
+  <section id="tAdmin" class="tab oculto">
+    <h2>Variables macro vigentes</h2>
+    <p class="intro">Actualízalas cada mes con el dato publicado por Banguat / INE. Aplican a todas las valuaciones desde que guardas.</p>
+    <div class="grid grid4">
+      <div><label>Inflación (%)</label><input id="aInf" type="number" step="0.01"></div>
+      <div><label>Tasa líder (%)</label><input id="aTasa" type="number" step="0.01"></div>
+      <div><label>IMAE (%)</label><input id="aImae" type="number" step="0.01"></div>
+      <div><label>ICAE (pts)</label><input id="aIcae" type="number" step="0.1"></div>
+    </div>
+    <h3 style="margin-top:1.6rem">Semáforo IVRA vs. modelo</h3>
+    <div class="grid" style="margin-top:.6rem">
+      <div><label>Verde hasta (± %)</label><input id="aVerde" type="number"></div>
+      <div><label>Amarillo hasta (± %)</label><input id="aAmar" type="number"></div>
+    </div>
+    <button class="btn" id="bGuardarCfg">Guardar configuración</button>
+    <div id="msgCfg"></div>
+    <h3 style="margin-top:2rem">Modelo</h3>
+    <div id="infoModelo" style="margin-top:.6rem"></div>
+    <label style="margin-top:1rem">Subir nueva versión (modelo_vX.json generado en Colab)</label>
+    <input type="file" id="aArchivo" accept=".json">
+    <button class="btn" id="bSubir">Activar esta versión</button>
+    <div id="msgModelo"></div>
+  </section>
+</main>
+</div>
+
+<script>
+/* ==================== CONFIGURACIÓN ==================== */
+const API_URL  = 'https://script.google.com/macros/s/AKfycbzNzLWCHbmVwvZHEQ6dQmLfy68KVTfGofxXgK5eZddagGSFIlHPYV9RCrh2J9eH7V8M/exec';   // termina en /exec
+const LOGO_URL = '';                                   // ej. 'logo_cofino_usados.png' (mismo repositorio)
+/* ====================================================== */
+</script>
+<script>
+/* motor.js — Motor de valuación VU (XGBoost v6) en el navegador.
+   Replica motor_valuacion.py / notebook v6 a partir de modelo_vX.json. */
+function MotorVU(M) {
+  const f32 = Math.fround;
+  const TEND = { CRECIENDO: 3, ESTABLE: 2, CONTRAYENDO: 0, NUEVA: 2 };
+  let avisos = [];
+  // Umbrales de XGBoost son float32: normalizarlos evita diferencias en valores exactos (ej. 3.1)
+  for (const t of M.xgb.trees) if (!t.c32) { t.c32 = t.c.map(f32); }
+
+  // Árboles XGBoost (formato JSON nativo): x < umbral → izquierda
+  function predXGB(x) {
+    let s = 0;
+    for (const t of M.xgb.trees) {
+      let n = 0;
+      while (t.l[n] !== -1) {
+        const v = x[t.f[n]];
+        if (v === null || v === undefined || Number.isNaN(v)) n = t.d[n] ? t.l[n] : t.r[n];
+        else n = f32(v) < t.c32[n] ? t.l[n] : t.r[n];
+      }
+      s += t.c[n];
+    }
+    return M.xgb.base_score + s;
+  }
+  // Árboles sklearn (imputación de precio nuevo): x <= umbral → izquierda
+  function predGBR(x) {
+    let s = 0;
+    for (const t of M.gbr.trees) {
+      let n = 0;
+      while (t.l[n] !== -1) n = f32(x[t.f[n]]) <= t.t[n] ? t.l[n] : t.r[n];
+      s += t.v[n];
+    }
+    return M.gbr.init + M.gbr.lr * s;
+  }
+
+  function encode(campo, valor) {
+    const cl = M.clases[campo];
+    let v = String(valor).trim().toUpperCase();
+    if (campo === 'Color') {
+      v = M.color_map[v] || v;
+      if (!cl.includes(v)) v = cl.includes('OTRO') ? 'OTRO' : cl[0];
+    }
+    let i = cl.indexOf(v);
+    if (i < 0) { avisos.push(`${campo} "${v}" no existe en el histórico; se usó un valor de respaldo.`); i = 0; }
+    return i;
+  }
+
+  function senalLinea(marca, linea, manual) {
+    const s = M.senales[`${marca.toUpperCase()}|${linea.toUpperCase()}`];
+    const r = s ? { ...s, fuente: 'linea_exacta' } : { ...M.senal_global, fuente: 'promedio_global' };
+    if (manual) {
+      if (manual.Liquidez) { const k = M.mapa_liquidez[manual.Liquidez.toUpperCase()]; if (k !== undefined) r.Liquidez_Enc = k; }
+      if (manual.Tendencia) { const k = TEND[manual.Tendencia.toUpperCase()]; if (k !== undefined) r.Tendencia_Enc = k; }
+      r.fuente = 'manual';
+    }
+    return r;
+  }
+
+  function fila(v, color, antig, km, kmAnio, pn, mes, s, macro) {
+    const d = {
+      'Antiguedad_Anios': antig, 'Antiguedad_Continua': antig + (mes - 1) / 12,
+      'Kilometraje': km, 'Km_Por_Anio': kmAnio,
+      'Nombre de Marca_Enc': encode('Nombre de Marca', v.marca),
+      'Descripciòn de Linea_Enc': encode('Descripciòn de Linea', v.linea),
+      'Clasificacion Carroceria_Enc': encode('Clasificacion Carroceria', v.carroceria),
+      'Transmision_Enc': encode('Transmision', v.transmision),
+      'COMBUSTIBLE_Enc': encode('COMBUSTIBLE', v.combustible),
+      'Color_Enc': encode('Color', color), 'TRACCION': Math.trunc(v.traccion),
+      'Venta nuevo': pn, 'Mes_Ingreso': mes,
+      'Liquidez_Enc': s.Liquidez_Enc, 'Tendencia_Enc': s.Tendencia_Enc,
+      'Tiene_Dato_Mercado_Nuevo': s.Tiene_Dato_Mercado_Nuevo,
+      'Nuevos vendidos 2025': s['Nuevos vendidos 2025'], 'Nuevos vendidos 2026': s['Nuevos vendidos 2026'],
+      'Var. YoY %': s['Var. YoY %'], ...macro,
+    };
+    return M.features.map(k => d[k]);
+  }
+
+  function imputarPN(v, anioModelo) {
+    const d = {
+      'Nombre de Marca_Enc_tmp': encode('Nombre de Marca', v.marca),
+      'Descripciòn de Linea_Enc_tmp': encode('Descripciòn de Linea', v.linea),
+      'Clasificacion Carroceria_Enc_tmp': encode('Clasificacion Carroceria', v.carroceria),
+      'Transmision_Enc_tmp': encode('Transmision', v.transmision),
+      'COMBUSTIBLE_Enc_tmp': encode('COMBUSTIBLE', v.combustible),
+      'TRACCION': Math.trunc(v.traccion), 'Modelo': Math.trunc(anioModelo),
+    };
+    return predGBR(M.features_imp.map(k => d[k]));
+  }
+
+  function idx(campo, valor) { return M.clases[campo].indexOf(String(valor).toUpperCase()); }
+
+  function confianza(marca, linea, antig, fuente, tendEnc) {
+    const me = idx('Nombre de Marca', marca), le = idx('Descripciòn de Linea', linea);
+    const lo = Math.max(0, antig - 2), hi = antig + 2;
+    let n = 0;
+    for (const [m, l, a] of M.densidad) if (m === me && l === le && a !== null && a >= lo && a <= hi) n++;
+    const sDens = n === 0 ? 0 : (n < 3 ? 20 : Math.min(100, Math.trunc(Math.log1p(n) / Math.log1p(50) * 100)));
+    let suma = 0, k = 0;
+    for (const [m, l, a, e] of M.errores) if (m === me && l === le && a !== null && a >= lo && a <= hi) { suma += e; k++; }
+    const mapeSim = k === 0 ? M.metricas.mape : suma / k;
+    const sPrec = Math.max(0, Math.trunc(100 - mapeSim * 2.5));
+    const base = 30 + (tendEnc / 3) * 70;
+    const sEst = Math.max(0, Math.min(100, Math.trunc(base - ((fuente === 'linea_exacta' || fuente === 'manual') ? 0 : 20))));
+    const total = Math.trunc(sDens * 0.33 + sPrec * 0.33 + sEst * 0.34);
+    const nivel = total >= 80 ? 'ALTO' : (total >= 60 ? 'MEDIO' : 'BAJO');
+    const ancho = total >= 80 ? 0.06 : (total >= 60 ? 0.11 : 0.18);
+    return { score_total: total, nivel, score_densidad: sDens, score_precision: sPrec,
+             score_estabilidad: sEst, n_similares: n, mape_similares: mapeSim, ancho };
+  }
+
+  function proyectarMacro(anios) {
+    const meses = Math.trunc(anios * 12), t = M.t_ultimo + meses, out = {};
+    for (const [c, p] of Object.entries(M.tendencia)) {
+      const cen = p.intercept + p.coef * t, inc = p.error_std * Math.sqrt(meses / 12);
+      out[c] = { central: cen, bajo: cen - inc, alto: cen + inc };
+    }
+    return out;
+  }
+  function proyectarPN(p, anios) {
+    const tr = M.tendencia['Inflación %'];
+    for (let m = 1; m <= Math.trunc(anios * 12); m++) {
+      const infl = tr.intercept + tr.coef * (M.t_ultimo + m);
+      p *= Math.pow(1 + infl / 100, 1 / 12);
+    }
+    return p;
+  }
+  const esc = (pr, k) => Object.fromEntries(Object.entries(pr).map(([c, v]) => [c, v[k]]));
+
+  function valuar(v, anioModelo, km, color, pn, macro, manual, fecha) {
+    avisos = [];
+    fecha = fecha || new Date();
+    const mes = fecha.getMonth() + 1;
+    const antig = Math.max(0, Math.min(20, fecha.getFullYear() - Math.trunc(anioModelo)));
+    const kmAnio = antig > 0 ? Math.min(120000, km / antig) : km;
+    const s = senalLinea(v.marca, v.linea, manual);
+    macro = macro || M.macro_default;
+    const imputado = !pn || pn <= 0;
+    if (imputado) pn = imputarPN(v, anioModelo);
+    const precio = predXGB(fila(v, color, antig, km, kmAnio, pn, mes, s, macro));
+    const c = confianza(v.marca, v.linea, antig, s.fuente, s.Tendencia_Enc);
+    return { precio, rango_inf: precio * (1 - c.ancho), rango_sup: precio * (1 + c.ancho),
+             precio_nuevo: pn, precio_nuevo_imputado: imputado, antiguedad: antig,
+             antiguedad_continua: antig + (mes - 1) / 12, km_anio: kmAnio,
+             retencion: pn > 0 ? precio / pn * 100 : null, senal: s, macro, confianza: c, avisos: [...avisos] };
+  }
+
+  function recompra(v, color, pnHoy, horiz, kmMax, fecha) {
+    avisos = [];
+    const mes = (fecha || new Date()).getMonth() + 1;
+    const kmFut = kmMax * horiz, s = senalLinea(v.marca, v.linea), pr = proyectarMacro(horiz), p = {};
+    for (const e of ['central', 'bajo', 'alto'])
+      p[e] = predXGB(fila(v, color, horiz, kmFut, kmMax, pnHoy, mes, s, esc(pr, e)));
+    const pnFut = proyectarPN(pnHoy, horiz);
+    const c = confianza(v.marca, v.linea, horiz, s.fuente, s.Tendencia_Enc);
+    return { precio: p.central, rango_inf: Math.min(p.bajo, p.alto), rango_sup: Math.max(p.bajo, p.alto),
+             km_futuro: kmFut, precio_nuevo_hoy: pnHoy, precio_nuevo_futuro: pnFut, brecha: pnFut - p.central,
+             retencion: p.central / pnHoy * 100, macro_proyectado: esc(pr, 'central'), senal: s,
+             confianza: c, avisos: [...avisos] };
+  }
+
+  function curva(v, color, antigAct, kmAct, pn, horizonte, kmAnual, esNuevo, macroHoy, manual, fecha) {
+    const mes = (fecha || new Date()).getMonth() + 1;
+    if (kmAnual == null) kmAnual = antigAct > 0 ? kmAct / antigAct : 15000;
+    const s = senalLinea(v.marca, v.linea, manual);
+    macroHoy = macroHoy || M.macro_default;
+    const pts = [];
+    for (let h = 0; h <= horizonte; h++) {
+      const antig = antigAct + h, km = kmAct + h * kmAnual;
+      let precio;
+      if (h === 0 && esNuevo) precio = pn;
+      else precio = predXGB(fila(v, color, antig, km, kmAnual, pn, mes, s,
+                                 h === 0 ? macroHoy : esc(proyectarMacro(h), 'central')));
+      const c = confianza(v.marca, v.linea, antig, s.fuente, s.Tendencia_Enc);
+      const a = (h === 0 && esNuevo) ? 0 : c.ancho;
+      pts.push({ anio: h, antiguedad: antig, km: Math.round(km), precio, inf: precio * (1 - a),
+                 sup: precio * (1 + a), retencion: precio / pn * 100, nivel: c.nivel });
+    }
+    return pts;
+  }
+
+  return { M, valuar, recompra, curva, colores: () => M.clases.Color };
+}
+if (typeof module !== 'undefined') module.exports = { MotorVU };
+
+</script>
+<script>
+const $ = id => document.getElementById(id);
+const q = x => 'Q' + Math.round(x).toLocaleString('en-US');
+const pct = (x, d = 1) => x.toFixed(d) + '%';
+const COLN = { ALTO: 'var(--alto)', MEDIO: 'var(--medio)', BAJO: 'var(--bajo)' };
+const COLH = { ALTO: '#1E8F5E', MEDIO: '#C98500', BAJO: '#D8412F' };
+const TRANS = { M: 'Mecánica', A: 'Automática', T: 'Automática', CVT: 'CVT' };
+const LIQ = { 0: 'Baja', 1: 'Sin dato', 2: 'Media', 3: 'Alta' };
+const cap = s => String(s).charAt(0).toUpperCase() + String(s).slice(1).toLowerCase();
+const tit = s => String(s).toLowerCase().replace(/(^|\s)\S/g, c => c.toUpperCase());
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+let S = { usr: null, clave: null, nombre: '', rol: '', cfg: null, motor: null, bit: [] };
+
+/* -------- API -------- */
+async function api(accion, extra = {}) {
+  const r = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ accion, usuario: S.usr, clave: S.clave, ...extra }) });
+  const j = await r.json();
+  if (!j.ok) throw new Error(j.error || 'Error de servidor');
+  return j;
+}
+
+/* -------- Caché del modelo (IndexedDB) -------- */
+function idb() {
+  return new Promise((res, rej) => { const o = indexedDB.open('valuacionVU', 1);
+    o.onupgradeneeded = () => o.result.createObjectStore('m'); o.onsuccess = () => res(o.result); o.onerror = () => rej(o.error); });
+}
+async function cacheGet(k) { try { const db = await idb(); return await new Promise(r => { const t = db.transaction('m').objectStore('m').get(k); t.onsuccess = () => r(t.result); t.onerror = () => r(null); }); } catch { return null; } }
+async function cacheSet(k, v) { try { const db = await idb(); db.transaction('m', 'readwrite').objectStore('m').put(v, k); } catch {} }
+
+/* -------- Login -------- */
+async function entrar(usr, clave, silencioso) {
+  S.usr = usr; S.clave = clave;
+  try {
+    const j = await api('login');
+    S.nombre = j.nombre; S.rol = j.rol; S.cfg = j.config;
+    try { sessionStorage.setItem('vu_ses', JSON.stringify({ usr, clave })); } catch {}
+    $('vLogin').classList.add('oculto'); $('vApp').classList.remove('oculto');
+    $('uNombre').textContent = S.nombre;
+    if (S.rol === 'admin') $('navAdmin').classList.remove('oculto');
+    await cargarModelo();
+  } catch (e) {
+    if (!silencioso) $('lMsg').innerHTML = `<div class="aviso error">${esc(e.message)}</div>`;
+  }
+}
+$('bLogin').onclick = () => entrar($('lUsr').value.trim(), $('lPw').value);
+$('lPw').addEventListener('keydown', e => { if (e.key === 'Enter') $('bLogin').click(); });
+$('bSalir').onclick = () => { try { sessionStorage.removeItem('vu_ses'); } catch {} location.reload(); };
+
+async function cargarModelo() {
+  $('cargaModelo').classList.remove('oculto');
+  document.querySelectorAll('.tab').forEach(t => t.classList.add('oculto'));
+  try {
+    if (!S.cfg.hay_modelo) throw new Error('Aún no hay un modelo activo. ' + (S.rol === 'admin' ? 'Súbelo en Administración.' : 'Avisa al administrador.'));
+    const clave = 'modelo_' + S.cfg.modelo_version + '_' + S.cfg.modelo_fecha;
+    let M = await cacheGet(clave);
+    if (!M) { M = (await api('modelo')).modelo; cacheSet(clave, M); }
+    S.motor = MotorVU(M);
+    $('sinModelo').classList.add('oculto');
+    iniciarFormularios();
+    mostrarTab(document.querySelector('nav button.activo').dataset.t);
+  } catch (e) {
+    $('sinModelo').textContent = e.message; $('sinModelo').classList.remove('oculto');
+    if (S.rol === 'admin') { mostrarTab('tAdmin'); }
+  } finally { $('cargaModelo').classList.add('oculto'); }
+  $('avisoMacro').classList.toggle('oculto', !!S.cfg.macro_vigente || !S.motor);
+}
+
+/* -------- Pestañas -------- */
+function mostrarTab(id) {
+  document.querySelectorAll('nav button').forEach(b => b.classList.toggle('activo', b.dataset.t === id));
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('oculto', t.id !== id));
+  if (id === 'tBitacora') cargarBitacora();
+  if (id === 'tAdmin') llenarAdmin();
+}
+$('tabs').onclick = e => { const b = e.target.closest('button'); if (b && (S.motor || b.dataset.t === 'tAdmin')) mostrarTab(b.dataset.t); };
+
+/* -------- Selector en cascada -------- */
+const NIVELES = [['marca', 'Marca', 0, tit], ['linea', 'Línea', 1, tit], ['carroceria', 'Carrocería', 2, cap],
+  ['transmision', 'Transmisión', 3, x => TRANS[x] || x], ['combustible', 'Combustible', 4, cap],
+  ['traccion', 'Tracción', 5, x => +x === 4 ? '4x4' : '4x2']];
+function crearSelector(cont, pref, alCambiar) {
+  const cat = S.motor.M.catalogo;
+  cont.innerHTML = NIVELES.map(([k, l]) => `<div><label>${l}</label><select id="${pref}_${k}"></select></div>`).join('');
+  const llenar = desde => {
+    let f = cat;
+    NIVELES.forEach(([k, , i, fmt], n) => {
+      const sel = $(`${pref}_${k}`);
+      if (n >= desde) {
+        const prev = sel.value;
+        const ops = [...new Set(f.map(r => String(r[i])))].sort((a, b) => a.localeCompare(b, 'es'));
+        sel.innerHTML = ops.map(o => `<option value="${esc(o)}">${esc(fmt(o))}</option>`).join('');
+        if (ops.includes(prev)) sel.value = prev;
+      }
+      f = f.filter(r => String(r[i]) === sel.value);
+    });
+    alCambiar && alCambiar(f[0]);
+  };
+  NIVELES.forEach(([k], n) => $(`${pref}_${k}`).onchange = () => llenar(n + 1));
+  llenar(0);
+  return () => { const o = {}; NIVELES.forEach(([k]) => o[k] = $(`${pref}_${k}`).value); o.traccion = +o.traccion;
+    const fila = cat.find(r => NIVELES.every(([k, , i]) => String(r[i]) === String(o[k]))); return [o, fila]; };
+}
+let leerU, leerN;
+function iniciarFormularios() {
+  const cols = S.motor.colores();
+  const opsColor = cols.map(c => `<option value="${esc(c)}" ${c === 'BLANCO' ? 'selected' : ''}>${esc(cap(c))}</option>`).join('');
+  $('uColor').innerHTML = opsColor; $('nColor').innerHTML = opsColor;
+  $('uAnio').value = new Date().getFullYear() - 5;
+  leerU = crearSelector($('selU'), 'u');
+  leerN = crearSelector($('selN'), 'n', fila => { if (fila && fila[7]) $('nPn').value = Math.round(fila[7] / 1000) * 1000; });
+}
+
+/* -------- Gráfica SVG -------- */
+function grafica(pts, pn, modo, colorLinea) {
+  const W = 900, H = 380, L = 70, R = 20, T = 34, B = 48;
+  const key = modo === 'Q' ? ['precio', 'inf', 'sup'] : ['retencion', 'ri', 'rs'];
+  const d = pts.map(p => ({ ...p, ri: p.inf / pn * 100, rs: p.sup / pn * 100 }));
+  const ref = modo === 'Q' ? pn : 100;
+  let lo = Math.min(...d.map(p => p[key[1]])), hi = Math.max(ref, ...d.map(p => p[key[2]]));
+  const pad = (hi - lo) * .12 || 1; lo -= pad; hi += pad;
+  const x = i => L + 36 + i * (W - L - R - 72) / (d.length - 1), y = v => T + (hi - v) / (hi - lo) * (H - T - B);
+  const fmt = v => modo === 'Q' ? q(v) : pct(v);
+  const paso = Math.pow(10, Math.floor(Math.log10((hi - lo) / 4))); const step = [1, 2, 2.5, 5, 10].map(s => s * paso).find(s => (hi - lo) / s <= 6);
+  let g = '';
+  for (let v = Math.ceil(lo / step) * step; v <= hi; v += step)
+    g += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="#EEF2F3"/><text x="${L - 8}" y="${y(v) + 4}" text-anchor="end" font-size="12" fill="#6b777c">${modo === 'Q' ? Math.round(v).toLocaleString('en-US') : v.toFixed(0) + '%'}</text>`;
+  g += `<line x1="${L}" x2="${W - R}" y1="${y(ref)}" y2="${y(ref)}" stroke="#BFCBD0" stroke-dasharray="6 5"/>
+        <text x="${W - R}" y="${y(ref) - 6}" text-anchor="end" font-size="12" fill="#6b777c">${modo === 'Q' ? 'Precio de nuevo' : '100%'}</text>`;
+  g += `<polyline fill="none" stroke="${colorLinea}" stroke-width="3" points="${d.map((p, i) => `${x(i)},${y(p[key[0]])}`).join(' ')}"/>`;
+  d.forEach((p, i) => {
+    const cx = x(i), cy = y(p[key[0]]);
+    if (p[key[2]] !== p[key[1]]) g += `<line x1="${cx}" x2="${cx}" y1="${y(p[key[1]])}" y2="${y(p[key[2]])}" stroke="${colorLinea}" stroke-width="1.3"/>
+      <line x1="${cx - 5}" x2="${cx + 5}" y1="${y(p[key[1]])}" y2="${y(p[key[1]])}" stroke="${colorLinea}" stroke-width="1.3"/>
+      <line x1="${cx - 5}" x2="${cx + 5}" y1="${y(p[key[2]])}" y2="${y(p[key[2]])}" stroke="${colorLinea}" stroke-width="1.3"/>`;
+    g += `<circle cx="${cx}" cy="${cy}" r="${i === 0 ? 8 : 5.5}" fill="${COLH[p.nivel]}" stroke="#fff" stroke-width="2"><title>Año +${p.anio} · ${p.km.toLocaleString('en-US')} km · Confianza ${cap(p.nivel)}</title></circle>
+      <text x="${cx}" y="${y(p[key[2]]) - 8}" text-anchor="middle" font-size="11.5" fill="#161918">${fmt(p[key[0]])}</text>
+      <text x="${cx}" y="${H - B + 20}" text-anchor="middle" font-size="12" fill="#6b777c">${p.anio}</text>`;
+  });
+  g += `<text x="${(L + W - R) / 2}" y="${H - 6}" text-anchor="middle" font-size="12.5" fill="#4d5a5f">Años desde hoy</text>`;
+  return `<svg viewBox="0 0 ${W} ${H}" style="min-width:620px;width:100%;font-family:'Work Sans',Arial">${g}</svg>`;
+}
+function bloqueCurva(id, pts, pn, color, nota) {
+  const cont = $(id);
+  const pintar = modo => {
+    cont.querySelector('.graf').innerHTML = grafica(pts, pn, modo, color);
+    cont.querySelectorAll('.toggle button').forEach(b => b.classList.toggle('on', b.dataset.m === modo));
+  };
+  cont.innerHTML = `<div class="curva-head"><h3>Curva de depreciación</h3>
+    <div class="toggle"><button data-m="Q">Quetzales</button><button data-m="R">Retención</button></div></div>
+    <div class="graf"></div>
+    <div class="leyenda">Confianza por año: ${['ALTO', 'MEDIO', 'BAJO'].map(n => `<span style="color:${COLN[n]}">●</span> ${cap(n)}`).join(' &nbsp;')}${nota ? ' · ' + nota : ''}</div>`;
+  cont.querySelectorAll('.toggle button').forEach(b => b.onclick = () => pintar(b.dataset.m));
+  pintar('Q');
+}
+const panel = (t, filas) => `<div class="panel"><h4>${t}</h4><table>${filas.map(([k, v]) => `<tr><td>${k}</td><td>${esc(v)}</td></tr>`).join('')}</table></div>`;
+function encabezado(v, chips, lbl, r) {
+  const m = S.motor.M.metricas;
+  return `<div class="ficha">
+    <div class="badges"><span>R² ${m.r2.toFixed(3)}</span><span>MAPE ${pct(m.mape)}</span><span>MAE ${q(m.mae)}</span></div>
+    <div class="veh">${esc(tit(v.marca))} ${esc(tit(v.linea))}</div>
+    <div class="sub">${esc(cap(v.carroceria))} · ${TRANS[v.transmision] || esc(v.transmision)} · ${v.traccion === 4 ? '4x4' : '4x2'} · ${esc(cap(v.combustible))}</div>
+    <div class="chips">${chips.map(c => `<span>${esc(c)}</span>`).join('')}</div>
+    <div class="precio-lbl">${lbl}</div><div class="precio">${q(r.precio)}</div>
+    <div>Rango ${q(r.rango_inf)} – ${q(r.rango_sup)}</div></div>`;
+}
+const macroVigente = () => S.cfg.macro_vigente || null;
+const num = id => { const v = parseFloat($(id).value); return isNaN(v) ? 0 : v; };
+
+/* -------- Valuar usado -------- */
+$('bValuar').onclick = async () => {
+  const [v] = leerU(); const anio = num('uAnio'), km = num('uKm'), color = $('uColor').value;
+  const pn = num('uPn'), ivra = num('uIvra'), aval = $('uAval').value.trim();
+  const hoy = new Date().getFullYear();
+  if (anio < hoy - 20 || anio > hoy + 1) { $('resU').innerHTML = `<div class="aviso error">Revisa el año del modelo (entre ${hoy - 20} y ${hoy + 1}).</div>`; return; }
+  const man = ($('uLiq').value || $('uTen').value) ? { Liquidez: $('uLiq').value || null, Tendencia: $('uTen').value || null } : null;
+  const mot = S.motor, r = mot.valuar(v, anio, km, color, pn, macroVigente(), man);
+  const cu = mot.curva(v, color, r.antiguedad, km, r.precio_nuevo, 10, null, false, macroVigente(), man);
+  const c = r.confianza, dif = ivra > 0 ? (ivra - r.precio) / r.precio * 100 : null;
+  let ivraHtml = '';
+  if (dif !== null) {
+    const uv = S.cfg.umbral_verde, ua = S.cfg.umbral_amarillo, a = Math.abs(dif);
+    const col = a <= uv ? COLN.ALTO : a <= ua ? COLN.MEDIO : COLN.BAJO;
+    const msg = a <= uv ? 'Ambas referencias coinciden.' : a <= ua ? 'Diferencia moderada: revisa condición y equipamiento.' : 'Diferencia alta: valida con tu jefe antes de ofertar.';
+    const dentro = ivra >= r.rango_inf && ivra <= r.rango_sup;
+    ivraHtml = `<div class="ivra" style="border-color:${col}"><b>IVRA ${q(ivra)}</b> vs. modelo ${q(r.precio)} →
+      <b style="color:${col}">${dif > 0 ? '+' : ''}${dif.toFixed(1)}%</b> · ${dentro ? 'dentro' : 'fuera'} del rango del modelo.<br>
+      <span class="nota">${msg}</span></div>`;
+  }
+  const s = r.senal, mac = r.macro;
+  const fuente = { linea_exacta: 'Dato de la línea', promedio_global: 'Promedio general', manual: 'Ajuste manual' }[s.fuente];
+  $('resU').innerHTML = encabezado(v, [String(anio), km.toLocaleString('en-US') + ' km', cap(color)], 'Precio estimado', r)
+    + r.avisos.map(a => `<div class="aviso">${esc(a)}</div>`).join('')
+    + `<div class="metricas">
+      <div><small>Precio de nuevo${r.precio_nuevo_imputado ? ' (estimado)' : ''}</small><b>${q(r.precio_nuevo)}</b></div>
+      <div><small>Retención del valor</small><b>${pct(r.retencion)}</b></div>
+      <div><small>Km por año</small><b>${Math.round(r.km_anio).toLocaleString('en-US')}</b></div>
+      <div><small>Confianza</small><b style="color:${COLN[c.nivel]}">${cap(c.nivel)} · ${c.score_total}</b></div></div>`
+    + ivraHtml + '<div id="curvaU"></div>'
+    + `<div class="paneles">` + panel('Datos del vehículo', [
+      ['Marca / línea', tit(v.marca) + ' ' + tit(v.linea)], ['Año modelo', anio],
+      ['Antigüedad', r.antiguedad_continua.toFixed(2) + ' años'], ['Kilometraje', km.toLocaleString('en-US') + ' km'],
+      ['Color', cap(color)], ['Casos similares en histórico', c.n_similares]])
+    + panel('Variables del modelo', [
+      ['Inflación', pct(mac['Inflación %'], 2)], ['Tasa líder', pct(mac['Tasa Líder %'], 2)],
+      ['IMAE', pct(mac['IMAE %'], 2)], ['ICAE', mac['ICAE pts'].toFixed(1) + ' pts'],
+      ['Liquidez de la línea', LIQ[Math.round(s.Liquidez_Enc)] || '—'], ['Fuente de señal de mercado', fuente]]) + '</div>';
+  bloqueCurva('curvaU', cu, r.precio_nuevo, '#003640', 'El punto grande es hoy.');
+  $('resU').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  registrar({ tipo: 'Usado', no_avaluo: aval, ...v, anio_modelo: anio, km, color,
+    precio_nuevo: Math.round(r.precio_nuevo), precio_nuevo_estimado: r.precio_nuevo_imputado ? 'SI' : 'NO',
+    precio_modelo: Math.round(r.precio), rango_inf: Math.round(r.rango_inf), rango_sup: Math.round(r.rango_sup),
+    confianza: c.nivel, precio_ivra: ivra || '', dif_ivra_pct: dif === null ? '' : +dif.toFixed(1) });
+};
+
+/* -------- Recompra -------- */
+$('bRecompra').onclick = () => {
+  const [v] = leerN(); const pn = num('nPn'), hz = +$('nHz').value, kmMax = num('nKm'), color = $('nColor').value;
+  if (pn < 10000) { $('resN').innerHTML = '<div class="aviso error">Ingresa el precio de venta del vehículo nuevo.</div>'; return; }
+  const mot = S.motor, r = mot.recompra(v, color, pn, hz, kmMax);
+  const cu = mot.curva(v, color, 0, 0, pn, Math.max(10, hz), kmMax, true, macroVigente());
+  const c = r.confianza, mp = r.macro_proyectado;
+  $('resN').innerHTML = encabezado(v, ['Nuevo', `Recompra a ${hz} años`, `Tope ${kmMax.toLocaleString('en-US')} km/año`],
+      `Precio de recompra estimado en ${hz} años`, r)
+    + r.avisos.map(a => `<div class="aviso">${esc(a)}</div>`).join('')
+    + `<div class="metricas">
+      <div><small>Retención proyectada</small><b>${pct(r.retencion)}</b></div>
+      <div><small>Precio de nuevo en ${hz} años</small><b>${q(r.precio_nuevo_futuro)}</b></div>
+      <div><small>Brecha de financiamiento</small><b>${q(r.brecha)}</b></div>
+      <div><small>Confianza</small><b style="color:${COLN[c.nivel]}">${cap(c.nivel)} · ${c.score_total}</b></div></div>
+      <p class="nota">El rango refleja escenarios macro (bajo/alto). La brecha es lo que el cliente necesitaría cubrir para renovar a un vehículo equivalente.</p>
+      <div id="curvaN"></div>`
+    + panel(`Macro proyectada a ${hz} años (escenario central)`, [
+      ['Inflación', pct(mp['Inflación %'], 2)], ['Tasa líder', pct(mp['Tasa Líder %'], 2)],
+      ['IMAE', pct(mp['IMAE %'], 2)], ['ICAE', mp['ICAE pts'].toFixed(1) + ' pts']]);
+  bloqueCurva('curvaN', cu, pn, '#1545D4');
+  $('resN').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  registrar({ tipo: `Recompra ${hz} años`, ...v, anio_modelo: new Date().getFullYear(), km: r.km_futuro, color,
+    precio_nuevo: pn, precio_nuevo_estimado: 'NO', precio_modelo: Math.round(r.precio),
+    rango_inf: Math.round(r.rango_inf), rango_sup: Math.round(r.rango_sup), confianza: c.nivel });
+};
+
+async function registrar(fila) {
+  try { await api('registrar', { fila: { ...fila, version_modelo: S.motor.M.version } }); }
+  catch (e) { console.warn('No se pudo registrar en bitácora:', e.message); }
+}
+
+/* -------- Bitácora -------- */
+async function cargarBitacora() {
+  $('tablaBit').innerHTML = '<div class="cargando"><div class="spin"></div>Cargando…</div>';
+  try { S.bit = (await api('bitacora')).filas; pintarBitacora(); }
+  catch (e) { $('tablaBit').innerHTML = `<div class="aviso error">${esc(e.message)}</div>`; }
+}
+function pintarBitacora() {
+  const b = S.bit, n = x => parseFloat(String(x).replace(/[^0-9.\-]/g, ''));
+  const usados = b.filter(f => f.tipo === 'Usado');
+  const conIvra = usados.filter(f => !isNaN(n(f.precio_ivra)));
+  const dentro = conIvra.filter(f => n(f.precio_ivra) >= n(f.rango_inf) && n(f.precio_ivra) <= n(f.rango_sup)).length;
+  const conFin = usados.filter(f => !isNaN(n(f.valor_final_avaluo)) && n(f.valor_final_avaluo) > 0);
+  const err = conFin.length ? conFin.reduce((s, f) => s + Math.abs(n(f.precio_modelo) - n(f.valor_final_avaluo)) / n(f.valor_final_avaluo), 0) / conFin.length * 100 : null;
+  $('kpis').innerHTML = `<div><small>Consultas</small><b>${b.length}</b></div><div><small>Con IVRA</small><b>${conIvra.length}</b></div>
+    <div><small>IVRA dentro del rango</small><b>${conIvra.length ? Math.round(dentro / conIvra.length * 100) + '%' : '—'}</b></div>
+    <div><small>Error modelo vs. avalúo final</small><b>${err === null ? '—' : err.toFixed(1) + '%'}</b></div>`;
+  if (!b.length) { $('tablaBit').innerHTML = '<p class="nota" style="padding:1rem">Aún no hay consultas registradas.</p>'; return; }
+  const cols = [['fecha_hora', 'Fecha'], ['usuario', 'Usuario'], ['tipo', 'Tipo'], ['no_avaluo', 'Avalúo'], ['marca', 'Marca'],
+    ['linea', 'Línea'], ['anio_modelo', 'Año'], ['km', 'Km'], ['precio_modelo', 'Precio modelo'], ['confianza', 'Confianza'],
+    ['precio_ivra', 'IVRA'], ['dif_ivra_pct', 'Dif. %']];
+  $('tablaBit').innerHTML = `<table><tr>${cols.map(c => `<th>${c[1]}</th>`).join('')}<th>Valor final avalúo (Q)</th></tr>
+    ${b.map(f => `<tr>${cols.map(([k]) => `<td>${esc(f[k])}</td>`).join('')}
+      <td>${f.tipo === 'Usado' ? `<input type="number" data-id="${esc(f.id)}" value="${esc(f.valor_final_avaluo)}" placeholder="Anotar">` : ''}</td></tr>`).join('')}</table>`;
+  $('tablaBit').querySelectorAll('input').forEach(i => i.onchange = async () => {
+    i.style.borderColor = 'var(--medio)';
+    try { await api('valorFinal', { id: i.dataset.id, valor: i.value }); i.style.borderColor = 'var(--alto)';
+      const f = S.bit.find(x => x.id === i.dataset.id); if (f) f.valor_final_avaluo = i.value; }
+    catch (e) { i.style.borderColor = 'var(--bajo)'; alert(e.message); }
+  });
+}
+$('bRecargarBit').onclick = cargarBitacora;
+$('bCsv').onclick = () => {
+  if (!S.bit.length) return;
+  const cols = Object.keys(S.bit[0]);
+  const csv = '\ufeff' + [cols.join(','), ...S.bit.map(f => cols.map(c => `"${String(f[c] ?? '').replace(/"/g, '""')}"`).join(','))].join('\n');
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+  a.download = `bitacora_valuacion_${new Date().toISOString().slice(0, 10)}.csv`; a.click();
+};
+
+/* -------- Administración -------- */
+function llenarAdmin() {
+  const m = S.cfg.macro_vigente || (S.motor ? S.motor.M.macro_default : null);
+  if (m) { $('aInf').value = (+m['Inflación %']).toFixed(2); $('aTasa').value = (+m['Tasa Líder %']).toFixed(2);
+           $('aImae').value = (+m['IMAE %']).toFixed(2); $('aIcae').value = (+m['ICAE pts']).toFixed(1); }
+  $('aVerde').value = S.cfg.umbral_verde; $('aAmar').value = S.cfg.umbral_amarillo;
+  const M = S.motor && S.motor.M;
+  $('infoModelo').innerHTML = M ? panel('Modelo activo', [['Versión', M.version], ['Activado', S.cfg.modelo_fecha],
+    ['Entrenado', M.fecha_entrenamiento], ['Dataset', M.archivo_datos], ['Registros', M.n_registros.toLocaleString('en-US')],
+    ['Último avalúo en histórico', M.fecha_ultimo_dato],
+    ['R² / MAPE / MAE', `${M.metricas.r2.toFixed(3)} / ${pct(M.metricas.mape)} / ${q(M.metricas.mae)}`],
+    ['Macro vigente actualizada', S.cfg.macro_fecha || 'Sin registrar']]) : '<p class="nota">No hay modelo activo.</p>';
+}
+$('bGuardarCfg').onclick = async () => {
+  const b = $('bGuardarCfg'); b.disabled = true;
+  try {
+    const j = await api('guardarConfig', { config: { macro: { 'Inflación %': num('aInf'), 'Tasa Líder %': num('aTasa'),
+      'IMAE %': num('aImae'), 'ICAE pts': num('aIcae') }, umbral_verde: num('aVerde'), umbral_amarillo: num('aAmar') } });
+    S.cfg = j.config; $('avisoMacro').classList.add('oculto');
+    $('msgCfg').innerHTML = '<div class="aviso" style="border-color:var(--alto);background:#EAF6EF">Configuración guardada.</div>'; llenarAdmin();
+  } catch (e) { $('msgCfg').innerHTML = `<div class="aviso error">${esc(e.message)}</div>`; }
+  b.disabled = false;
+};
+$('bSubir').onclick = async () => {
+  const f = $('aArchivo').files[0]; if (!f) { $('msgModelo').innerHTML = '<div class="aviso">Elige el archivo .json primero.</div>'; return; }
+  const b = $('bSubir'); b.disabled = true; $('msgModelo').innerHTML = '<div class="cargando"><div class="spin"></div>Subiendo modelo…</div>';
+  try {
+    const txt = await f.text(); const M = JSON.parse(txt); MotorVU(M);   // valida que el motor lo pueda leer
+    const j = await api('subirModelo', { nombre: f.name, contenido: txt });
+    S.cfg = j.config; $('msgModelo').innerHTML = `<div class="aviso" style="border-color:var(--alto);background:#EAF6EF">Modelo ${esc(j.version)} activado.</div>`;
+    await cargarModelo(); mostrarTab('tAdmin');
+  } catch (e) { $('msgModelo').innerHTML = `<div class="aviso error">${esc(e.message)}</div>`; }
+  b.disabled = false;
+};
+
+/* -------- Inicio -------- */
+if (LOGO_URL) { $('logo').src = LOGO_URL; $('logo').classList.remove('oculto'); $('marcaTxt').classList.add('oculto'); }
+if (API_URL.startsWith('PEGA')) $('lMsg').innerHTML = '<div class="aviso error">Falta configurar API_URL en index.html.</div>';
+try { const s = JSON.parse(sessionStorage.getItem('vu_ses') || 'null'); if (s) entrar(s.usr, s.clave, true); } catch {}
+</script>
+</body>
+</html>
