@@ -6,6 +6,7 @@
 <title>Valuación de Usados · Cofiño</title>
 <link href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root{--verde:#003640;--lima:#C4F402;--negro:#161918;--gris:#BFCBD0;--fondo:#F4F7F8;--linea:#DCE3E6;
 --azul:#1545D4;--alto:#1E8F5E;--medio:#C98500;--bajo:#D8412F;--txt2:#4d5a5f}
@@ -86,6 +87,34 @@ summary{cursor:pointer;font-weight:500}
 @keyframes g{to{transform:rotate(360deg)}}
 @media(max-width:800px){.grid,.grid4{grid-template-columns:1fr 1fr}.metricas,.kpis{grid-template-columns:1fr 1fr}
 .paneles{grid-template-columns:1fr}.precio{font-size:2.4rem}.veh{font-size:1.6rem}.ficha{padding:1.3rem}}
+/* Panel de inventario */
+.invp{border:1.5px solid var(--linea);border-radius:20px;padding:1.2rem 1.3rem;margin:0 0 1.4rem}
+.invp .ph{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;align-items:baseline}
+.invp .ph h3{font-size:1.25rem}.invp .fuente{font-size:.8rem;color:var(--txt2)}
+.sema{display:flex;gap:.9rem;align-items:center;border-radius:14px;padding:.75rem 1rem;margin:1rem 0}
+.sema .dot{width:14px;height:14px;border-radius:50%;flex:none}.sema b{display:block}.sema span{font-size:.88rem;color:var(--txt2)}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem}.tiles.t3{grid-template-columns:repeat(3,1fr)}
+.tiles>div,.tiles>details{background:var(--fondo);border-radius:12px;padding:.6rem .8rem;margin:0;border:none}
+.tiles small{color:var(--txt2);font-size:.8rem;display:block}
+.tiles b{display:block;font-family:'Clash Display',sans-serif;font-size:1.5rem;font-weight:600;line-height:1.2}
+.tiles em{font-style:normal;font-size:.8rem;color:var(--txt2)}
+.costos .tiles>div,.costos .tiles>details{background:#F7F4EC}
+.costos{margin-top:1.2rem;border-top:1.5px dashed var(--linea);padding-top:.9rem}
+.invp h4{font-size:.95rem;margin:1.3rem 0 .5rem;font-weight:600}
+.barra{display:flex;height:30px;border-radius:8px;overflow:hidden;gap:2px}
+.barra div{display:flex;align-items:center;justify-content:center;color:#fff;font-size:.8rem;font-weight:600;min-width:0}
+.ley{display:flex;gap:1rem;flex-wrap:wrap;font-size:.78rem;color:var(--txt2);margin-top:.35rem}
+.ley i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+.tinv{overflow-x:auto}.tinv table{width:100%;border-collapse:collapse;font-size:.88rem}
+.tinv th{text-align:left;font-weight:600;color:var(--txt2);font-size:.8rem;padding:.35rem .4rem;border-bottom:1.5px solid var(--linea);white-space:nowrap}
+.tinv td{padding:.45rem .4rem;border-bottom:1px solid #EEF2F3}.tinv .n{text-align:right;font-variant-numeric:tabular-nums}
+.chip{display:inline-block;font-size:.72rem;border-radius:999px;padding:.05rem .5rem;margin-right:.2rem;border:1px solid var(--linea);white-space:nowrap}
+.chip.r{background:#FFF6E0;border-color:#F0D9A0}.chip.c{background:#EAF6EF;border-color:#BFE3CE}
+.cmp{background:var(--fondo);border-radius:12px;padding:.7rem 1rem;margin-top:.7rem;font-size:.9rem}
+details.perd summary{list-style:none;cursor:pointer;font-weight:400}details.perd summary::-webkit-details-marker{display:none}
+details.perd summary em{color:var(--verde);text-decoration:underline}.neg{color:var(--bajo);font-weight:600}
+.okmsg{background:#EAF6EF;border-left:4px solid var(--alto)}
+@media(max-width:800px){.tiles,.tiles.t3{grid-template-columns:1fr 1fr}.col-hide{display:none}}
 @media(max-width:480px){.grid,.grid4{grid-template-columns:1fr}}
 </style>
 </head>
@@ -185,6 +214,22 @@ summary{cursor:pointer;font-weight:500}
     </div>
     <button class="btn" id="bGuardarCfg">Guardar configuración</button>
     <div id="msgCfg"></div>
+    <h3 style="margin-top:2rem">Inventario semanal</h3>
+    <p class="intro">Sube el reporte VUS503WA tal como sale del sistema (.XLS). La app calcula los indicadores y liga las líneas con la herramienta automáticamente.</p>
+    <div id="infoInv"></div>
+    <div class="grid" style="margin-top:.6rem">
+      <div><label>Reporte VUS503WA (.xls / .xlsx)</label><input type="file" id="aInvArchivo" accept=".xls,.xlsx"></div>
+      <div><label>Fecha de corte</label><input type="date" id="aInvCorte"></div>
+    </div>
+    <button class="btn" id="bInv">Cargar inventario</button>
+    <div id="msgInv"></div>
+    <div id="pendInv"></div>
+    <h3 style="margin-top:2rem">Semáforo de inventario</h3>
+    <div class="grid" style="margin-top:.6rem">
+      <div><label>Verde: días promedio hasta</label><input id="aInvVerde" type="number"></div>
+      <div><label>Rojo: días promedio desde</label><input id="aInvRojo" type="number"></div>
+    </div>
+    <p class="nota">Amarillo queda entre ambos. También es rojo si 30% o más del stock pasa de 180 días, y amarillo si 30% o más pasa de 90 días. Se guarda con "Guardar configuración".</p>
     <h3 style="margin-top:2rem">Modelo</h3>
     <div id="infoModelo" style="margin-top:.6rem"></div>
     <label style="margin-top:1rem">Subir nueva versión (modelo_vX.json generado en Colab)</label>
@@ -443,7 +488,8 @@ async function cargarModelo() {
     const clave = 'modelo_' + S.cfg.modelo_version + '_' + S.cfg.modelo_fecha;
     let M = await cacheGet(clave);
     if (!M) { M = (await api('modelo')).modelo; cacheSet(clave, M); }
-    S.motor = MotorVU(M);
+    S.motor = MotorVU(M); S.invCat = null;
+    await cargarInventario();
     $('sinModelo').classList.add('oculto');
     iniciarFormularios();
     mostrarTab(document.querySelector('nav button.activo').dataset.t);
@@ -584,7 +630,7 @@ $('bValuar').onclick = async () => {
       <div><small>Retención del valor</small><b>${pct(r.retencion)}</b></div>
       <div><small>Km por año</small><b>${Math.round(r.km_anio).toLocaleString('en-US')}</b></div>
       <div><small>Confianza</small><b style="color:${COLN[c.nivel]}">${cap(c.nivel)} · ${c.score_total}</b></div></div>`
-    + ivraHtml + '<div id="curvaU"></div>'
+    + ivraHtml + '<div id="invU"></div><div id="curvaU"></div>'
     + `<div class="paneles">` + panel('Datos del vehículo', [
       ['Marca / línea', tit(v.marca) + ' ' + tit(v.linea)], ['Año modelo', anio],
       ['Antigüedad', r.antiguedad_continua.toFixed(2) + ' años'], ['Kilometraje', km.toLocaleString('en-US') + ' km'],
@@ -594,6 +640,7 @@ $('bValuar').onclick = async () => {
       ['IMAE', pct(mac['IMAE %'], 2)], ['ICAE', mac['ICAE pts'].toFixed(1) + ' pts'],
       ['Liquidez de la línea', LIQ[Math.round(s.Liquidez_Enc)] || '—'], ['Fuente de señal de mercado', fuente]]) + '</div>';
   bloqueCurva('curvaU', cu, r.precio_nuevo, '#003640', 'El punto grande es hoy.');
+  $('invU').innerHTML = panelInventario(v, anio, km, r.precio); activarPanelInventario($('invU'));
   $('resU').scrollIntoView({ behavior: 'smooth', block: 'start' });
   registrar({ tipo: 'Usado', no_avaluo: aval, ...v, anio_modelo: anio, km, color,
     precio_nuevo: Math.round(r.precio_nuevo), precio_nuevo_estimado: r.precio_nuevo_imputado ? 'SI' : 'NO',
@@ -678,6 +725,7 @@ function llenarAdmin() {
   if (m) { $('aInf').value = (+m['Inflación %']).toFixed(2); $('aTasa').value = (+m['Tasa Líder %']).toFixed(2);
            $('aImae').value = (+m['IMAE %']).toFixed(2); $('aIcae').value = (+m['ICAE pts']).toFixed(1); }
   $('aVerde').value = S.cfg.umbral_verde; $('aAmar').value = S.cfg.umbral_amarillo;
+  pintarInfoInv(); if (S.inv && S.inv.filas.length) pintarPendientes();
   const M = S.motor && S.motor.M;
   $('infoModelo').innerHTML = M ? panel('Modelo activo', [['Versión', M.version], ['Activado', S.cfg.modelo_fecha],
     ['Entrenado', M.fecha_entrenamiento], ['Dataset', M.archivo_datos], ['Registros', M.n_registros.toLocaleString('en-US')],
@@ -689,7 +737,8 @@ $('bGuardarCfg').onclick = async () => {
   const b = $('bGuardarCfg'); b.disabled = true;
   try {
     const j = await api('guardarConfig', { config: { macro: { 'Inflación %': num('aInf'), 'Tasa Líder %': num('aTasa'),
-      'IMAE %': num('aImae'), 'ICAE pts': num('aIcae') }, umbral_verde: num('aVerde'), umbral_amarillo: num('aAmar') } });
+      'IMAE %': num('aImae'), 'ICAE pts': num('aIcae') }, umbral_verde: num('aVerde'), umbral_amarillo: num('aAmar'),
+      inv_dias_verde: num('aInvVerde'), inv_dias_rojo: num('aInvRojo') } });
     S.cfg = j.config; $('avisoMacro').classList.add('oculto');
     $('msgCfg').innerHTML = '<div class="aviso" style="border-color:var(--alto);background:#EAF6EF">Configuración guardada.</div>'; llenarAdmin();
   } catch (e) { $('msgCfg').innerHTML = `<div class="aviso error">${esc(e.message)}</div>`; }
@@ -704,6 +753,233 @@ $('bSubir').onclick = async () => {
     S.cfg = j.config; $('msgModelo').innerHTML = `<div class="aviso" style="border-color:var(--alto);background:#EAF6EF">Modelo ${esc(j.version)} activado.</div>`;
     await cargarModelo(); mostrarTab('tAdmin');
   } catch (e) { $('msgModelo').innerHTML = `<div class="aviso error">${esc(e.message)}</div>`; }
+  b.disabled = false;
+};
+
+/* ================= INVENTARIO SEMANAL (guía para el valuador; no entra al modelo) ================= */
+const MARCA_ALIAS = { 'VOLKSWAGEN': 'VOLKS', 'MERCEDES BENZ': 'MERCEDEZ BENZ', 'MERCEDES-BENZ': 'MERCEDEZ BENZ', 'BESTUNE': 'BESTUN' };
+// [marca herramienta, inicio de la línea en inventario, línea en la herramienta]
+const LINEA_ALIAS = [['TOYOTA', 'HILUX', 'HI LUX'], ['TOYOTA', 'HI-LUX', 'HI LUX'], ['TOYOTA', 'C-HR', 'CHR'],
+  ['HONDA', 'CR-V', 'CRV'], ['HONDA', 'ODYSSEY', 'ODYSE'], ['CHEVROLET', 'TRAVERSE', 'TRAVERS'],
+  ['LAND ROVER', 'RANGE ROVER', 'RANG ROVER'], ['LAND ROVER', 'EVOQUE', 'RANG ROVER'], ['NISSAN', 'QASHQAI', 'QASHQAI']];
+const SIN_LINEA = '—';
+const nrm = x => String(x ?? '').toUpperCase().replace(/[\s\-\.]/g, '');
+const sinAcento = x => String(x ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+
+function catalogoMarcas() {
+  const c = {};
+  for (const r of S.motor.M.catalogo) (c[r[0]] = c[r[0]] || new Set()).add(r[1]);
+  return c;
+}
+// Liga una línea del inventario con la línea de la herramienta
+function ligar(marcaInv, lineaInv) {
+  const cat = S.invCat || (S.invCat = catalogoMarcas());
+  const al = (S.invAlias || {})[marcaInv + '|' + lineaInv];
+  if (al) return al[1] === SIN_LINEA || !al[1] ? { marca_herr: al[0], linea_herr: '', metodo: 'revisada: sin línea' }
+                                                : { marca_herr: al[0], linea_herr: al[1], metodo: 'equivalencia guardada' };
+  const mh = MARCA_ALIAS[marcaInv] || marcaInv;
+  if (!cat[mh]) return { marca_herr: mh, linea_herr: '', metodo: 'sin equivalencia' };
+  const ln = nrm(lineaInv);
+  for (const [m, pre, dest] of LINEA_ALIAS) if (m === mh && ln.startsWith(nrm(pre)) && cat[mh].has(dest)) return { marca_herr: mh, linea_herr: dest, metodo: 'alias' };
+  if (cat[mh].has(lineaInv)) return { marca_herr: mh, linea_herr: lineaInv, metodo: 'exacta' };
+  let best = '';
+  for (const c of cat[mh]) if (ln.startsWith(nrm(c)) && nrm(c).length > nrm(best).length) best = c;
+  return best ? { marca_herr: mh, linea_herr: best, metodo: 'familia' } : { marca_herr: mh, linea_herr: '', metodo: 'sin equivalencia' };
+}
+function religar() { if (!S.inv || !S.motor) return; S.inv.filas.forEach(f => Object.assign(f, ligar(f.marca_inv, f.linea_inv))); }
+
+async function cargarInventario() {
+  try {
+    const j = await api('inventario');
+    S.invAlias = {}; (j.alias || []).forEach(a => S.invAlias[a[0] + '|' + a[1]] = [a[2], a[3]]);
+    S.inv = { filas: j.filas.map(r => Object.fromEntries(j.columnas.map((c, i) => [c, r[i]]))) };
+    S.invCat = null; religar();
+  } catch (e) { console.warn('Inventario no disponible:', e.message); S.inv = null; }
+}
+
+/* ---- Lectura del Excel VUS503WA ---- */
+const COLS_EXCEL = { avaluo: 'avaluo', placa: 'placa', descripcion: 'descripcion', marca: 'marca vhi', desclinea: 'descripcion linea',
+  anio: 'modelo', km: 'kilometros', color: 'color', dias: 'dias', fecha_ingreso: 'inventario', valor_avaluo: 'valor del avaluo',
+  gastos: 'gastos', total: 'total', venta: 'venta', sts: 'sts', consignado: 'consignado', certificado: 'vhi certificado',
+  predio: 'pre', recibio: 'nom ven rec', grupo_origen: 'grupo marca ven' };
+const OBLIGATORIAS = ['marca', 'desclinea', 'anio', 'km', 'dias', 'gastos', 'total', 'venta'];
+async function leerExcelInventario(file) {
+  if (typeof XLSX === 'undefined') throw new Error('No se pudo cargar el lector de Excel. Revisa tu conexión a internet.');
+  const wb = XLSX.read(await file.arrayBuffer(), { type: 'array' });
+  const filas = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: null });
+  if (!filas.length) throw new Error('El archivo no trae filas.');
+  const mapa = {}; Object.keys(filas[0]).forEach(k => mapa[sinAcento(k)] = k);
+  const col = {}; for (const [k, h] of Object.entries(COLS_EXCEL)) col[k] = mapa[h];
+  const faltan = OBLIGATORIAS.filter(k => !col[k]).map(k => COLS_EXCEL[k]);
+  if (faltan.length) throw new Error('Faltan columnas: ' + faltan.join(', ') + '. ¿Es el reporte VUS503WA?');
+  const v = (f, k) => col[k] ? f[col[k]] : null;
+  const n = x => { const y = parseFloat(String(x ?? '').replace(/,/g, '')); return isNaN(y) ? 0 : y; };
+  const t = x => String(x ?? '').trim();
+  return filas.filter(f => t(v(f, 'marca')) && t(v(f, 'desclinea'))).map(f => {
+    const marca = t(v(f, 'marca')).toUpperCase(), desc = t(v(f, 'desclinea')).toUpperCase();
+    let resto = desc.startsWith(marca) ? desc.slice(marca.length).trim() : desc;
+    const tr = resto.match(/(4X2|4X4)$/); resto = resto.replace(/\s*(4X2|4X4)$/, '').trim();
+    return { avaluo: t(v(f, 'avaluo')), placa: t(v(f, 'placa')), descripcion: t(v(f, 'descripcion')),
+      marca_inv: marca, linea_inv: resto, traccion: tr ? tr[1] : '', anio: Math.round(n(v(f, 'anio'))),
+      km: Math.round(n(v(f, 'km'))), color: t(v(f, 'color')), dias: Math.round(n(v(f, 'dias'))),
+      fecha_ingreso: t(v(f, 'fecha_ingreso')), valor_avaluo: n(v(f, 'valor_avaluo')), gastos: n(v(f, 'gastos')),
+      total: n(v(f, 'total')), venta: n(v(f, 'venta')),
+      reservado: /RSV/i.test(t(v(f, 'sts'))) ? 'SI' : 'NO', consignado: t(v(f, 'consignado')) ? 'SI' : 'NO',
+      certificado: /^SI$/i.test(t(v(f, 'certificado'))) ? 'SI' : 'NO', predio: t(v(f, 'predio')),
+      recibio: t(v(f, 'recibio')), grupo_origen: t(v(f, 'grupo_origen')) };
+  });
+}
+
+/* ---- Cálculos por línea ---- */
+function statsLinea(marca, linea) {
+  const g = (S.inv ? S.inv.filas : []).filter(f => f.marca_herr === marca && f.linea_herr === linea);
+  if (!g.length) return null;
+  const nc = g.filter(f => f.consignado !== 'SI');
+  const sum = (a, k) => a.reduce((s, x) => s + (+x[k] || 0), 0);
+  const bins = { '0-30': 0, '31-60': 0, '61-90': 0, '91-180': 0, '>180': 0 };
+  g.forEach(f => { const d = +f.dias; bins[d <= 30 ? '0-30' : d <= 60 ? '31-60' : d <= 90 ? '61-90' : d <= 180 ? '91-180' : '>180']++; });
+  const perd = nc.filter(f => +f.venta < +f.total).map(f => ({ ...f, dif: f.venta - f.total })).sort((a, b) => a.dif - b.dif);
+  const vNc = sum(nc, 'venta');
+  return { filas: g, n: g.length, rsv: g.filter(f => f.reservado === 'SI').length, cert: g.filter(f => f.certificado === 'SI').length,
+    dias: sum(g, 'dias') / g.length, dmax: Math.max(...g.map(f => +f.dias)), m90: g.filter(f => +f.dias > 90).length,
+    venta: sum(g, 'venta') / g.length, gastos: sum(g, 'gastos') / g.length, bins, perd,
+    margen: vNc ? (vNc - sum(nc, 'total')) / vNc * 100 : null,
+    versiones: [...new Set(g.map(f => f.linea_inv))].sort() };
+}
+function semaforoInv(st) {
+  const v = S.cfg.inv_dias_verde || 60, r = S.cfg.inv_dias_rojo || 120;
+  if (st.dias > r || st.bins['>180'] / st.n >= .3) return ['rojo', 'Rojo', 'Stock lento: recibe solo con precio de oportunidad y valida con tu jefe.', '#D8412F'];
+  if (st.dias > v || st.m90 / st.n >= .3) return ['amarillo', 'Amarillo', 'Rotación media: cuida el precio de recepción.', '#C98500'];
+  return ['verde', 'Verde', 'Rota bien: puedes recibir con normalidad.', '#1E8F5E'];
+}
+const BINS_INV = [['0-30', '#7FBF9E'], ['31-60', '#3E9C74'], ['61-90', '#1E6F52'], ['91-180', '#E0A43A'], ['>180', '#D8412F']];
+
+function panelInventario(v, anio, km, precio) {
+  const corte = S.cfg.inv_corte ? S.cfg.inv_corte.split('-').reverse().join('/') : '';
+  if (!S.inv || !S.inv.filas.length) return `<div class="invp"><div class="ph"><h3>Nuestro inventario</h3></div><p class="nota">Aún no se ha cargado el inventario semanal.</p></div>`;
+  const st = statsLinea(v.marca, v.linea);
+  const cab = `<div class="ph"><h3>Nuestro inventario de ${esc(tit(v.linea))}</h3><div class="fuente">Corte ${corte} · ${esc(S.cfg.inv_archivo || 'VUS503WA')}${st ? ' · incluye ' + esc(st.versiones.map(tit).join(', ')) : ''}</div></div>`;
+  const viejo = S.cfg.inv_corte && (Date.now() - new Date(S.cfg.inv_corte + 'T12:00:00')) / 864e5 > 10
+    ? `<div class="aviso">El inventario tiene más de 10 días. Pide al administrador que suba el corte de esta semana.</div>` : '';
+  if (!st) return `<div class="invp">${cab}${viejo}<div class="sema" style="background:#1545D414;border-left:5px solid #1545D4"><div class="dot" style="background:#1545D4"></div><div><b style="color:#1545D4">Sin unidades de esta línea en inventario</b><span>No tenemos stock que compita con esta unidad.</span></div></div></div>`;
+  const [, et, msg, col] = semaforoInv(st);
+  const comp = st.filas.filter(f => Math.abs(f.anio - anio) <= 1)
+    .map(f => ({ ...f, d: Math.abs(f.anio - anio) * 1e5 + Math.abs(f.km - km) })).sort((a, b) => a.d - b.d).slice(0, 5);
+  let cmp = '<p class="nota">No hay unidades de años cercanos en inventario.</p>';
+  if (comp.length) {
+    const lo = Math.min(...comp.map(c => +c.venta)), hi = Math.max(...comp.map(c => +c.venta)), g = (lo - precio) / lo * 100;
+    const txt = g <= 0 ? 'Tu estimado iguala o supera al comparable más barato: no queda espacio para gastos ni margen.'
+      : `Diferencia de ${g.toFixed(1)}% contra el comparable más barato: ${g < 8 ? 'queda poco espacio' : 'hay espacio'} para gastos y margen.`;
+    cmp = `<div class="tinv"><table><tr><th>Año</th><th class="n">Km</th><th class="col-hide">Versión</th><th class="col-hide">Color</th><th class="n">Días</th><th class="n">Precio venta</th><th class="n">Gastos</th><th></th></tr>
+      ${comp.map(c => `<tr><td>${c.anio}</td><td class="n">${(+c.km).toLocaleString('en-US')}</td><td class="col-hide">${esc(tit(c.linea_inv))}</td><td class="col-hide">${esc(tit(c.color).slice(0, 24))}</td>
+      <td class="n" style="color:${c.dias > 180 ? 'var(--bajo)' : c.dias > 90 ? 'var(--medio)' : 'inherit'}">${c.dias}</td><td class="n">${q(c.venta)}</td><td class="n">${+c.gastos ? q(c.gastos) : '—'}</td>
+      <td>${c.reservado === 'SI' ? '<span class="chip r">Reservado</span>' : ''}${c.certificado === 'SI' ? '<span class="chip c">Certificado</span>' : ''}${c.consignado === 'SI' ? '<span class="chip">Consignado</span>' : ''}</td></tr>`).join('')}</table></div>
+      <div class="cmp">Nuestros comparables se publican entre <b>${q(lo)} y ${q(hi)}</b>. Tu precio estimado de mercado es <b>${q(precio)}</b>. ${txt}</div>`;
+  }
+  const pt = st.perd.reduce((s, x) => s + x.dif, 0);
+  const perdTile = st.perd.length
+    ? `<details class="perd"><summary><small>Precio de venta menor a la inversión</small><b class="neg">−${q(-pt)}</b><em>${st.perd.length} unidad${st.perd.length > 1 ? 'es' : ''} · ver detalle</em></summary></details>`
+    : `<div><small>Precio de venta menor a la inversión</small><b style="color:var(--alto)">Ninguna</b><em>todas con margen positivo</em></div>`;
+  const listaPerd = st.perd.length ? `<div class="tinv lperd oculto" style="margin-top:.8rem"><table><tr><th>Unidad</th><th class="n">Km</th><th class="n">Días</th><th class="n">Inversión</th><th class="n">Precio venta</th><th class="n">Pérdida</th></tr>
+    ${st.perd.map(x => `<tr><td>${esc(tit(x.linea_inv))} ${x.anio}</td><td class="n">${(+x.km).toLocaleString('en-US')}</td><td class="n">${x.dias}</td><td class="n">${q(x.total)}</td><td class="n">${q(x.venta)}</td><td class="n neg">−${q(-x.dif)}</td></tr>`).join('')}
+    <tr><td colspan="5"><b>Total</b></td><td class="n neg">−${q(-pt)}</td></tr></table></div>` : '';
+  const mg = st.margen;
+  return `<div class="invp">${cab}${viejo}
+    <div class="sema" style="background:${col}14;border-left:5px solid ${col}"><div class="dot" style="background:${col}"></div>
+      <div><b style="color:${col}">${et} · ${msg}</b><span>${Math.round(st.dias)} días promedio · ${Math.round(st.m90 / st.n * 100)}% de las unidades con más de 90 días</span></div></div>
+    <div class="tiles">
+      <div><small>En stock</small><b>${st.n}</b><em>${st.rsv} reservadas · ${st.cert} certificadas</em></div>
+      <div><small>Días promedio</small><b>${Math.round(st.dias)}</b><em>máximo ${st.dmax}</em></div>
+      <div><small>Más de 90 días</small><b>${st.m90}</b><em>${Math.round(st.m90 / st.n * 100)}% del stock</em></div>
+      <div><small>Precio de venta promedio</small><b>${q(st.venta)}</b><em>todas las versiones</em></div></div>
+    <h4>Antigüedad del stock</h4>
+    <div class="barra">${BINS_INV.map(([k, c]) => st.bins[k] ? `<div style="flex:${st.bins[k]};background:${c}">${st.bins[k]}</div>` : '').join('')}</div>
+    <div class="ley">${BINS_INV.map(([k, c]) => `<span><i style="background:${c}"></i>${k} días</span>`).join('')}</div>
+    <h4>Comparables en inventario (${anio - 1}–${anio + 1}, ordenados por cercanía)</h4>${cmp}
+    <div class="costos"><h4 style="margin-top:0">Costos y margen</h4>
+      <div class="tiles t3">
+        <div><small>Margen promedio</small><b style="color:${mg === null ? 'inherit' : mg < 3 ? 'var(--bajo)' : mg < 6 ? 'var(--medio)' : 'var(--alto)'}">${mg === null ? '—' : mg.toFixed(1) + '%'}</b><em>sin consignados</em></div>
+        <div><small>Gastos promedio por unidad</small><b>${q(st.gastos)}</b><em>reacondicionamiento</em></div>
+        ${perdTile}</div>${listaPerd}</div></div>`;
+}
+function activarPanelInventario(cont) {
+  const d = cont.querySelector('details.perd'); if (!d) return;
+  d.ontoggle = () => cont.querySelector('.lperd').classList.toggle('oculto', !d.open);
+}
+
+/* ---- Administración: carga semanal ---- */
+function resumenHistorial(filas) {
+  const g = {};
+  filas.filter(f => f.linea_herr).forEach(f => (g[f.marca_herr + '|' + f.linea_herr] = g[f.marca_herr + '|' + f.linea_herr] || []).push(f));
+  return Object.entries(g).map(([k, a]) => {
+    const [m, l] = k.split('|'), nc = a.filter(f => f.consignado !== 'SI');
+    return { marca_herr: m, linea_herr: l, unidades: a.length, dias_prom: Math.round(a.reduce((s, f) => s + f.dias, 0) / a.length),
+      mas_90: a.filter(f => f.dias > 90).length, venta_prom: Math.round(a.reduce((s, f) => s + f.venta, 0) / a.length),
+      gastos_prom: Math.round(a.reduce((s, f) => s + f.gastos, 0) / a.length),
+      perdida_total: Math.round(nc.filter(f => f.venta < f.total).reduce((s, f) => s + f.venta - f.total, 0)) };
+  });
+}
+async function publicarInventario(filas, archivo, corte) {
+  const j = await api('subirInventario', { meta: { archivo, corte }, filas, resumen: resumenHistorial(filas) });
+  S.cfg = j.config; S.inv = { filas }; religar(); return j;
+}
+function pintarInfoInv() {
+  const c = S.cfg;
+  $('infoInv').innerHTML = c.inv_corte ? panel('Inventario vigente', [['Corte', c.inv_corte.split('-').reverse().join('/')],
+    ['Archivo', c.inv_archivo], ['Unidades', c.inv_unidades], ['Cargado', c.inv_fecha_carga]]) : '<p class="nota">Aún no se ha cargado inventario.</p>';
+  if (!$('aInvCorte').value) $('aInvCorte').value = new Date(Date.now() - 6 * 36e5).toISOString().slice(0, 10);
+  $('aInvVerde').value = c.inv_dias_verde || 60; $('aInvRojo').value = c.inv_dias_rojo || 120;
+}
+function pintarPendientes() {
+  const filas = S.inv ? S.inv.filas : [];
+  const cuenta = m => filas.filter(f => f.metodo === m).length;
+  const ligadas = filas.filter(f => f.linea_herr).length;
+  const pend = {}; filas.filter(f => f.metodo === 'sin equivalencia').forEach(f => { const k = f.marca_inv + '|' + f.linea_inv; pend[k] = (pend[k] || 0) + 1; });
+  const keys = Object.keys(pend).sort();
+  let html = `<div class="aviso okmsg">${filas.length} unidades cargadas · ${ligadas} ligadas a la herramienta (${Math.round(ligadas / Math.max(1, filas.length) * 100)}%).
+    Exactas ${cuenta('exacta')} · por familia ${cuenta('familia')} · por alias ${cuenta('alias') + cuenta('equivalencia guardada')} · revisadas sin línea ${cuenta('revisada: sin línea')}.</div>`;
+  if (keys.length) {
+    const cat = catalogoMarcas();
+    const opts = sel => `<option value="${SIN_LINEA}">No existe en la herramienta</option>` + Object.keys(cat).sort().map(m =>
+      `<optgroup label="${esc(m)}">${[...cat[m]].sort().map(l => `<option value="${esc(m + '|' + l)}" ${m === sel ? '' : ''}>${esc(tit(m) + ' · ' + tit(l))}</option>`).join('')}</optgroup>`).join('');
+    html += `<h4 style="margin:1rem 0 .4rem">Líneas nuevas sin equivalencia (${keys.length})</h4>
+      <p class="nota">Elige a qué línea de la herramienta corresponde cada una. Si no existe, deja "No existe en la herramienta": ya no se volverá a preguntar.</p>
+      <div class="tabla"><table><tr><th>Marca</th><th>Línea en inventario</th><th>Unidades</th><th>Línea en la herramienta</th></tr>
+      ${keys.map(k => { const [m, l] = k.split('|'); return `<tr><td>${esc(m)}</td><td>${esc(l)}</td><td>${pend[k]}</td><td><select data-k="${esc(k)}" style="min-width:240px">${opts(MARCA_ALIAS[m] || m)}</select></td></tr>`; }).join('')}</table></div>
+      <button class="btn" id="bAlias">Guardar equivalencias</button>`;
+  }
+  $('pendInv').innerHTML = html;
+  const b = $('bAlias'); if (!b) return;
+  b.onclick = async () => {
+    b.disabled = true;
+    try {
+      const lista = [...$('pendInv').querySelectorAll('select[data-k]')].map(s => {
+        const [mi, li] = s.dataset.k.split('|'); const [mh, lh] = s.value === SIN_LINEA ? [MARCA_ALIAS[mi] || mi, SIN_LINEA] : s.value.split('|');
+        return { marca_inv: mi, linea_inv: li, marca_herr: mh, linea_herr: lh };
+      });
+      await api('guardarAlias', { alias: lista });
+      lista.forEach(a => S.invAlias[a.marca_inv + '|' + a.linea_inv] = [a.marca_herr, a.linea_herr]);
+      religar();
+      await publicarInventario(S.inv.filas, S.cfg.inv_archivo, S.cfg.inv_corte);
+      pintarInfoInv(); pintarPendientes();
+      $('msgInv').innerHTML = '<div class="aviso okmsg">Equivalencias guardadas. Se aplican desde ahora y en las próximas cargas.</div>';
+    } catch (e) { $('msgInv').innerHTML = `<div class="aviso error">${esc(e.message)}</div>`; b.disabled = false; }
+  };
+}
+$('bInv').onclick = async () => {
+  const f = $('aInvArchivo').files[0], corte = $('aInvCorte').value;
+  if (!f) { $('msgInv').innerHTML = '<div class="aviso">Elige el archivo VUS503WA primero.</div>'; return; }
+  if (!S.motor) { $('msgInv').innerHTML = '<div class="aviso error">Primero activa un modelo: las líneas se ligan contra su catálogo.</div>'; return; }
+  const b = $('bInv'); b.disabled = true; $('msgInv').innerHTML = '<div class="cargando"><div class="spin"></div>Leyendo y calculando…</div>';
+  try {
+    if (!S.invAlias) await cargarInventario();
+    S.invAlias = S.invAlias || {};
+    const filas = await leerExcelInventario(f);
+    filas.forEach(x => Object.assign(x, ligar(x.marca_inv, x.linea_inv)));
+    await publicarInventario(filas, f.name, corte);
+    $('msgInv').innerHTML = `<div class="aviso okmsg">Inventario publicado: ${filas.length} unidades, corte ${corte.split('-').reverse().join('/')}. Los valuadores ya lo ven en el panel.</div>`;
+    pintarInfoInv(); pintarPendientes();
+  } catch (e) { $('msgInv').innerHTML = `<div class="aviso error">${esc(e.message)}</div>`; }
   b.disabled = false;
 };
 
